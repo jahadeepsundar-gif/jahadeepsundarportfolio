@@ -1663,193 +1663,275 @@ body::before {
 
 /* ============================================================
 /* ============================================================
-   GSAP INTRO SPLASH ANIMATION (Pure Plain Text on Solid Black)
+   INTRO SPLASH (GSAP, once per session) — see components/IntroSplash.tsx
    ============================================================ */
+/* Base overlay doubles as the pre-hydration placeholder, so it matches the
+   site's cream grid paper and the page never flashes before the intro starts */
 .splash-screen-overlay,
 .intro-splash-overlay {
   position: fixed;
   inset: 0;
   width: 100vw;
   width: 100dvw;
-  max-width: 100vw;
   height: 100vh;
   height: 100dvh;
-  max-height: 100dvh;
-  background-color: #000000;
   z-index: 999999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   pointer-events: auto;
   user-select: none;
-  overflow: hidden;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  background-color: #F4F2EC;
+  background-image:
+    linear-gradient(to right, rgba(16, 16, 16, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 16, 16, 0.045) 1px, transparent 1px);
+  background-size: 38px 38px;
+  background-position: center top;
+}
+
+/* Once the intro runs, the black shows wherever the paper is clipped away */
+.splash-screen-overlay.intro-live {
+  background: #101010;
+}
+
+/* Returning visitors: set before first paint by the inline script in layout.tsx */
+html[data-intro-played] .splash-screen-overlay {
+  display: none !important;
+}
+html[data-intro-played] .page-content {
   opacity: 1;
-  will-change: opacity;
+  transition: none;
 }
 
-/* 0.0s - 6.2s: Top Caption - strictly centered horizontally with safe padding */
-.splash-caption,
-.intro-splash-caption {
+.intro-paper {
   position: absolute;
-  top: clamp(20px, 6vh, 48px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: calc(100vw - 32px);
-  padding-inline: 16px;
-  font-family: var(--font-main, 'Space Grotesk', -apple-system, sans-serif);
-  font-size: clamp(12px, 3.2vw, 16px);
-  font-weight: 300;
-  color: #CCCCCC;
-  letter-spacing: 0.5px;
-  text-align: center;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0;
-  box-sizing: border-box;
-}
-
-/* Center Text Stage for 0.3s - 3.7s: Plain Text ("Hello" / "I'm" / "JAHADEEP SUNDAR") */
-.splash-center-text-stage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: max-content;
-  max-width: calc(100vw - 24px);
-  padding: 0 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  pointer-events: none;
-  z-index: 15;
-}
-
-.splash-center-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-display, 'Archivo Black', 'Space Grotesk', sans-serif);
-  font-weight: 900;
-  color: #FFFFFF;
-  text-transform: uppercase;
-  white-space: nowrap !important;
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-.splash-center-text.text-hello,
-.splash-center-text.text-im {
-  font-size: clamp(34px, 8.5vw, 76px);
-  letter-spacing: -1px;
-}
-
-.splash-center-text.text-name {
-  font-size: clamp(18px, 5.2vw, 72px);
-  letter-spacing: clamp(-0.5px, 0.1vw, 1.5px);
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
-  justify-content: center;
-  align-items: baseline;
-  gap: clamp(5px, 1.2vw, 18px);
-}
-
-.splash-center-text .name-first,
-.splash-center-text .name-last {
-  white-space: nowrap !important;
-  display: inline-block;
-}
-
-.splash-center-text .name-first {
-  color: #FFFFFF;
-}
-
-.splash-center-text .name-accent {
-  color: #EA0808;
-  text-shadow: 0 0 32px rgba(234, 8, 8, 0.5);
-}
-
-/* 3.7s - 6.2s: Uppercase Headline + Word Rotator */
-.splash-headline-box,
-.intro-headline-container {
-  position: absolute;
-  top: 50%;
-  left: clamp(16px, 6vw, 100px);
-  transform: translateY(-50%);
-  width: calc(100% - clamp(32px, 12vw, 200px));
-  max-width: 960px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: clamp(4px, 1vw, 10px);
-  pointer-events: none;
-  z-index: 20;
-  opacity: 0;
-  box-sizing: border-box;
-}
-
-.splash-headline-line {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: clamp(8px, 1.8vw, 20px);
-  align-items: baseline;
-  position: relative;
-  width: 100%;
-}
-
-.splash-headline-line.line-2 {
-  position: relative;
-  min-height: clamp(30px, 7.2vw, 76px);
-  width: 100%;
-}
-
-.splash-rotator-wrapper {
-  position: relative;
-  display: block;
+  inset: 0;
+  background-color: #F4F2EC;
+  background-image:
+    linear-gradient(to right, rgba(16, 16, 16, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 16, 16, 0.045) 1px, transparent 1px);
+  background-size: 38px 38px;
+  background-position: center top;
   overflow: hidden;
-  height: clamp(30px, 7.2vw, 76px);
+  z-index: 1;
+}
+
+/* Paper grain, same as the site */
+.intro-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* Soft diagonal light and shadow drifting over the paper */
+.intro-paper-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    118deg,
+    rgba(16, 16, 16, 0.10) 0%,
+    rgba(16, 16, 16, 0) 18%,
+    rgba(16, 16, 16, 0.07) 32%,
+    rgba(16, 16, 16, 0) 46%,
+    rgba(255, 255, 255, 0.35) 58%,
+    rgba(16, 16, 16, 0.06) 72%,
+    rgba(16, 16, 16, 0) 86%,
+    rgba(16, 16, 16, 0.08) 100%
+  );
+  background-size: 220% 220%;
+}
+
+/* Crosshair + guide lines */
+.intro-plus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+}
+.intro-plus::before,
+.intro-plus::after {
+  content: '';
+  position: absolute;
+  background: #101010;
+}
+.intro-plus::before { left: 10px; top: 0; width: 2px; height: 22px; }
+.intro-plus::after { top: 10px; left: 0; height: 2px; width: 22px; }
+
+.intro-half-v {
+  position: absolute;
+  left: calc(50% - 1px);
+  top: 0;
+  width: 2px;
+  height: 50%;
+  background: #101010;
+  transform-origin: top center;
+}
+.intro-half-h {
+  position: absolute;
+  top: calc(50% - 1px);
+  left: 0;
+  height: 2px;
+  width: 50%;
+  background: #101010;
+  transform-origin: center left;
+}
+
+.intro-dash {
+  position: absolute;
+  pointer-events: none;
+}
+.intro-dash-v {
+  left: calc(50% - 1px);
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-image: repeating-linear-gradient(to bottom, #101010 0 8px, transparent 8px 14px);
+}
+.intro-dash-h {
+  top: calc(50% - 1px);
+  left: 0;
+  height: 2px;
   width: 100%;
-  min-width: 0;
+  background-image: repeating-linear-gradient(to right, #101010 0 8px, transparent 8px 14px);
 }
 
-.splash-word,
-.intro-headline-word {
-  font-family: var(--font-display, 'Archivo Black', 'Space Grotesk', sans-serif);
-  font-size: clamp(24px, 6.2vw, 68px);
-  font-weight: 900;
-  line-height: 1.06;
-  letter-spacing: clamp(-0.8px, -0.02em, -0.5px);
-  text-transform: uppercase;
-  color: #FFFFFF;
-  display: inline-block;
+/* Hello / I'm */
+.intro-word {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  font-family: var(--font-main);
+  font-size: clamp(44px, 7.5vw, 120px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #101010;
   white-space: nowrap;
-  opacity: 0;
-  will-change: transform, opacity;
+  text-shadow: 0 6px 18px rgba(16, 16, 16, 0.18);
 }
 
-.word-rotator-editor,
-.word-rotator-designer,
-.word-rotator-partner,
-.splash-word-accent {
+/* Name that pinches into the eye */
+.intro-name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5.2vw, 84px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #101010;
+  white-space: nowrap;
+  text-shadow: 0 8px 18px rgba(16, 16, 16, 0.35);
+}
+.intro-name-letter {
+  display: inline-block;
+}
+
+/* Iris / pupil layer */
+.intro-eye {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* YOUR CREATIVE <role> */
+.intro-tagline {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: 3;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5vw, 80px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #F4F2EC;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.intro-your-letter,
+.intro-creative {
+  display: inline-block;
+}
+.intro-creative {
+  color: #EA0808;
+}
+.intro-roles {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-main);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.intro-roles-sizer {
+  visibility: hidden;
+}
+.intro-role {
   position: absolute;
   left: 0;
-  top: 0;
-  color: #EA0808;
-  text-shadow: 0 0 30px rgba(234, 8, 8, 0.45);
+  bottom: 0;
 }
 
-.word-creative {
+/* Caption: difference blend keeps it dark on paper and light on black */
+.intro-caption {
+  position: absolute;
+  top: clamp(18px, 4vh, 40px);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 4;
+  max-width: calc(100vw - 32px);
+  font-family: var(--font-main);
+  font-size: clamp(12px, 1.15vw, 16px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: #FFFFFF;
+  mix-blend-mode: difference;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Skip — same stamped button style as the navbar social links */
+.intro-skip {
+  position: absolute;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 4vh, 32px);
+  z-index: 5;
+  padding: 6px 14px;
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #101010;
+  background: #FFFFFF;
+  border: 1.5px solid #101010;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 #101010;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.intro-skip:hover,
+.intro-skip:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #101010;
 }
 
 /* Reduced Motion Support */

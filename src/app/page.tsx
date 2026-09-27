@@ -11,6 +11,7 @@ import ExperienceSection from "@/components/ExperienceSection";
 import AchievementsSection from "@/components/AchievementsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import MotionLayer from "@/components/MotionLayer";
 
 const IntroSplash = dynamic(() => import("@/components/IntroSplash"), {
   ssr: false,
@@ -93,6 +94,9 @@ export default function Home() {
         {/* ✦ Modern Footer */}
         <Footer />
       </div>
+
+      {/* ✦ Additive motion layer: cursor, scroll progress, parallax, transitions */}
+      <MotionLayer />
     </>
   );
 }
